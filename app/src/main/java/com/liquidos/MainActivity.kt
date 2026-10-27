@@ -33,30 +33,49 @@ class MainActivity : Activity() {
         val subtitle = TextView(this).apply {
             text = "Universal Liquid Glass"
             textSize = 16f
-            setTextColor(Color.rgb(180, 205, 235))
+            setTextColor(Color.rgb(190, 215, 245))
             gravity = Gravity.CENTER
-            setPadding(0, 12, 0, 28)
         }
 
-        val panel = TextView(this).apply {
-            text = "LIQUID GLASS\n\nYour world, in glass."
-            textSize = 20f
+        val glass = LiquidGlassView(this)
+
+        val caption = TextView(this).apply {
+            text = "YOUR WORLD, IN GLASS"
+            textSize = 14f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
-            setPadding(32, 48, 32, 48)
-            setBackgroundColor(Color.rgb(35, 48, 70))
         }
 
-        root.addView(title)
-        root.addView(subtitle)
         root.addView(
-            panel,
+            title,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
         )
 
+        root.addView(
+            subtitle,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = 12
+            }
+        )
+
+        root.addView(
+            glass,
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                280
+            ).apply {
+                topMargin = 28
+                bottomMargin = 20
+            }
+        )
+
+        root.addView(caption)
         setContentView(root)
     }
 }
