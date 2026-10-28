@@ -1,4 +1,3 @@
-
 package com.liquidos
 
 import android.app.Activity
@@ -49,7 +48,7 @@ class MainActivity : Activity(), SensorEventListener {
     }
 
     private fun buildInterface() {
-        val background = GradientDrawable(
+        val pageBackground = GradientDrawable(
             GradientDrawable.Orientation.TL_BR,
             intArrayOf(
                 Color.rgb(8, 12, 24),
@@ -61,7 +60,7 @@ class MainActivity : Activity(), SensorEventListener {
         root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(22), dp(18), dp(22), dp(28))
-            this.background = background
+            this.background = pageBackground
         }
 
         val scroll = ScrollView(this).apply {
@@ -189,10 +188,12 @@ class MainActivity : Activity(), SensorEventListener {
             textSize = 42f
             gravity = Gravity.CENTER
             setTextColor(Color.WHITE)
-            background = rounded(
-                Color.argb(45, 255, 255, 255),
-                Color.argb(110, 220, 240, 255),
-                100
+            setBackground(
+                rounded(
+                    Color.argb(45, 255, 255, 255),
+                    Color.argb(110, 220, 240, 255),
+                    100
+                )
             )
         }
 
@@ -362,10 +363,12 @@ class MainActivity : Activity(), SensorEventListener {
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(16), 0, dp(12), 0)
-            background = rounded(
-                Color.rgb(21, 28, 47),
-                Color.argb(70, 145, 190, 255),
-                18
+            setBackground(
+                rounded(
+                    Color.rgb(21, 28, 47),
+                    Color.argb(70, 145, 190, 255),
+                    18
+                )
             )
             isClickable = true
             isFocusable = true
