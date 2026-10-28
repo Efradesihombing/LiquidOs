@@ -1,10 +1,11 @@
 package com.liquidos
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
-import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -12,7 +13,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -24,9 +24,7 @@ import android.widget.TextView
 
 class MainActivity : Activity(), SensorEventListener {
 
-    private lateinit var root: LinearLayout
     private lateinit var sensorManager: SensorManager
-
     private val glassViews = mutableListOf<LiquidGlassView>()
 
     private var intensity = 0.78f
@@ -43,7 +41,8 @@ class MainActivity : Activity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+        sensorManager =
+            getSystemService(SENSOR_SERVICE) as SensorManager
 
         window.statusBarColor = Color.rgb(8, 11, 20)
         window.navigationBarColor = Color.rgb(8, 11, 20)
@@ -52,19 +51,17 @@ class MainActivity : Activity(), SensorEventListener {
     }
 
     private fun buildInterface() {
-        val pageBackground = GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(
-                Color.rgb(8, 12, 24),
-                Color.rgb(13, 17, 34),
-                Color.rgb(7, 10, 19)
-            )
-        )
-
-        root = LinearLayout(this).apply {
+        val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(22), dp(18), dp(22), dp(28))
-            this.background = pageBackground
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(
+                    Color.rgb(8, 12, 24),
+                    Color.rgb(13, 17, 34),
+                    Color.rgb(7, 10, 19)
+                )
+            )
         }
 
         val scroll = ScrollView(this).apply {
@@ -80,53 +77,41 @@ class MainActivity : Activity(), SensorEventListener {
             gravity = Gravity.CENTER_VERTICAL
         }
 
-        val brand = TextView(this).apply {
-            text = "LIQUIDOS"
-            textSize = 20f
-            letterSpacing = 0.16f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.create("sans-serif", Typeface.BOLD)
-        }
-
         header.addView(
-            brand,
+            label("LIQUIDOS", 20f, Color.WHITE, true),
             LinearLayout.LayoutParams(0, dp(42), 1f)
         )
 
-        val status = TextView(this).apply {
-            text = "●  GLASS ENGINE"
-            textSize = 10f
-            letterSpacing = 0.08f
-            setTextColor(Color.rgb(139, 224, 255))
-            setPadding(dp(12), dp(9), dp(12), dp(9))
-            background = rounded(
-                Color.argb(24, 90, 195, 255),
-                Color.argb(100, 90, 195, 255),
-                24
+        header.addView(
+            label(
+                "● GLASS ENGINE",
+                10f,
+                Color.rgb(139, 224, 255),
+                true
             )
-        }
+        )
 
-        header.addView(status)
         root.addView(header)
 
-        val eyebrow = label(
-            "PERSONAL MATERIAL SYSTEM",
-            10f,
-            Color.rgb(119, 190, 235),
-            true
+        root.addView(
+            label(
+                "PERSONAL MATERIAL SYSTEM",
+                10f,
+                Color.rgb(119, 190, 235),
+                true
+            ),
+            topMargin(30)
         )
-        eyebrow.letterSpacing = 0.18f
 
-        root.addView(eyebrow, topMargin(30))
-
-        val heading = TextView(this).apply {
-            text = "Your world.\nIn liquid glass."
-            textSize = 35f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
-            setLineSpacing(dp(2).toFloat(), 1f)
-        }
-        root.addView(heading, topMargin(10))
+        root.addView(
+            label(
+                "Your world.\nIn liquid glass.",
+                35f,
+                Color.WHITE,
+                false
+            ),
+            topMargin(10)
+        )
 
         root.addView(
             label(
@@ -146,8 +131,7 @@ class MainActivity : Activity(), SensorEventListener {
                 Color.argb(55, 135, 203, 255),
                 30
             )
-            clipChildren = false
-            clipToPadding = false
+            clipToOutline = true
         }
 
         val heroGlass = LiquidGlassView(this).apply {
@@ -156,6 +140,7 @@ class MainActivity : Activity(), SensorEventListener {
             setMotionEnabled(motionEnabled)
             setAnimated(animationEnabled)
         }
+
         glassViews.add(heroGlass)
 
         hero.addView(
@@ -168,65 +153,39 @@ class MainActivity : Activity(), SensorEventListener {
 
         val heroContent = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(22), dp(20), dp(22), dp(20))
+            gravity = Gravity.CENTER
+            setPadding(dp(18), dp(18), dp(18), dp(18))
         }
 
-        val heroTop = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-        }
-
-        heroTop.addView(
-            label("LIQUID GLASS / 01", 10f, Color.WHITE, true),
-            LinearLayout.LayoutParams(0, dp(24), 1f)
+        heroContent.addView(
+            label("LIQUID GLASS / 01", 10f, Color.WHITE, true)
         )
 
-        heroTop.addView(
-            label("● LIVE", 10f, Color.rgb(154, 246, 216), true)
+        heroContent.addView(
+            label("✦", 48f, Color.WHITE, true).apply {
+                gravity = Gravity.CENTER
+            },
+            topMargin(24)
         )
 
-        heroContent.addView(heroTop)
+        heroContent.addView(
+            label("Crystal surface", 21f, Color.WHITE, true).apply {
+                gravity = Gravity.CENTER
+            },
+            topMargin(12)
+        )
 
-        val orb = TextView(this).apply {
-            text = "✦"
-            textSize = 42f
-            gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
-            setBackground(
-                rounded(
-                    Color.argb(45, 255, 255, 255),
-                    Color.argb(110, 220, 240, 255),
-                    100
-                )
-            )
-        }
-
-        val orbParams = LinearLayout.LayoutParams(dp(82), dp(82))
-        orbParams.gravity = Gravity.CENTER_HORIZONTAL
-        orbParams.topMargin = dp(20)
-        heroContent.addView(orb, orbParams)
-
-        val crystal = label(
-            "Crystal surface",
-            21f,
-            Color.WHITE,
-            true
-        ).apply {
-            gravity = Gravity.CENTER
-        }
-
-        heroContent.addView(crystal, topMargin(12))
-
-        val details = label(
-            "Layered highlights  ·  Soft glow  ·  Depth",
-            11f,
-            Color.rgb(199, 211, 232),
-            false
-        ).apply {
-            gravity = Gravity.CENTER
-        }
-
-        heroContent.addView(details, topMargin(7))
+        heroContent.addView(
+            label(
+                "Layered highlights · Soft glow · Depth",
+                11f,
+                Color.rgb(199, 211, 232),
+                false
+            ).apply {
+                gravity = Gravity.CENTER
+            },
+            topMargin(7)
+        )
 
         hero.addView(
             heroContent,
@@ -245,26 +204,6 @@ class MainActivity : Activity(), SensorEventListener {
                 topMargin = dp(14)
             }
         )
-
-        val stats = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
-
-        stats.addView(
-            infoCard("RENDER STYLE", "Multi-layer glass"),
-            LinearLayout.LayoutParams(0, dp(92), 1f).apply {
-                marginEnd = dp(7)
-            }
-        )
-
-        stats.addView(
-            infoCard("MOTION ENGINE", "Sensor ready"),
-            LinearLayout.LayoutParams(0, dp(92), 1f).apply {
-                marginStart = dp(7)
-            }
-        )
-
-        root.addView(stats, topMargin(14))
 
         root.addView(sectionTitle("GLASS ENGINE"), topMargin(30))
 
@@ -293,15 +232,13 @@ class MainActivity : Activity(), SensorEventListener {
         val slider = SeekBar(this).apply {
             max = 100
             progress = 78
-            progressTintList = android.content.res.ColorStateList.valueOf(
-                Color.rgb(111, 207, 255)
-            )
-            thumbTintList = android.content.res.ColorStateList.valueOf(
-                Color.WHITE
-            )
+            progressTintList =
+                android.content.res.ColorStateList.valueOf(
+                    Color.rgb(111, 207, 255)
+                )
+            thumbTintList =
+                android.content.res.ColorStateList.valueOf(Color.WHITE)
         }
-
-        intensityCard.addView(slider, topMargin(8))
 
         slider.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
@@ -312,6 +249,7 @@ class MainActivity : Activity(), SensorEventListener {
                 ) {
                     intensity = progress / 100f
                     intensityValue.text = "$progress%"
+
                     glassViews.forEach {
                         it.setIntensity(intensity)
                     }
@@ -322,6 +260,7 @@ class MainActivity : Activity(), SensorEventListener {
             }
         )
 
+        intensityCard.addView(slider, topMargin(8))
         root.addView(intensityCard, topMargin(12))
 
         root.addView(sectionTitle("BEHAVIOUR"), topMargin(26))
@@ -331,7 +270,7 @@ class MainActivity : Activity(), SensorEventListener {
         behaviourCard.addView(
             settingRow(
                 "Motion response",
-                "Tilt the phone to shift the light",
+                "Tilt your phone to shift the light",
                 true
             ) { enabled ->
                 motionEnabled = enabled
@@ -361,18 +300,15 @@ class MainActivity : Activity(), SensorEventListener {
         root.addView(sectionTitle("COLOR ATMOSPHERE"), topMargin(26))
 
         val paletteButton = TextView(this).apply {
-            text = "◈    ${paletteNames[palette]}                 CHANGE  ↗"
+            text = "◈  ${paletteNames[palette]}     CHANGE ↗"
             textSize = 12f
-            letterSpacing = 0.04f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(16), 0, dp(12), 0)
-            setBackground(
-                rounded(
-                    Color.rgb(21, 28, 47),
-                    Color.argb(70, 145, 190, 255),
-                    18
-                )
+            background = rounded(
+                Color.rgb(21, 28, 47),
+                Color.argb(70, 145, 190, 255),
+                18
             )
             isClickable = true
             isFocusable = true
@@ -381,7 +317,7 @@ class MainActivity : Activity(), SensorEventListener {
         paletteButton.setOnClickListener {
             palette = (palette + 1) % paletteNames.size
             paletteButton.text =
-                "◈    ${paletteNames[palette]}                 CHANGE  ↗"
+                "◈  ${paletteNames[palette]}     CHANGE ↗"
 
             glassViews.forEach {
                 it.setColorMode(palette)
@@ -398,39 +334,81 @@ class MainActivity : Activity(), SensorEventListener {
             }
         )
 
-        val footer = label(
-            "LIQUIDOS  •  MATERIAL EXPERIMENT  •  V1.0",
-            9f,
-            Color.rgb(103, 117, 145),
-            true
-        ).apply {
+        // BUTTON TO OPEN THE FLOATING OVERLAY
+        val overlayButton = TextView(this).apply {
+            text = "◈   OPEN FLOATING GLASS PANEL   ↗"
+            textSize = 12f
+            letterSpacing = 0.03f
             gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            background = rounded(
+                Color.rgb(30, 76, 112),
+                Color.rgb(100, 205, 255),
+                18
+            )
+            isClickable = true
+            isFocusable = true
+        }
+
+        overlayButton.setOnClickListener {
+            if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                !Settings.canDrawOverlays(this)
+            ) {
+                val permissionIntent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+
+                startActivityForResult(permissionIntent, 401)
+            } else {
+                startService(
+                    Intent(this, OverlayService::class.java)
+                )
+            }
         }
 
         root.addView(
-            footer,
+            overlayButton,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(40)
+                dp(56)
             ).apply {
-                topMargin = dp(24)
+                topMargin = dp(14)
             }
+        )
+
+        root.addView(
+            label(
+                "LIQUIDOS • MATERIAL EXPERIMENT • V1.0",
+                9f,
+                Color.rgb(103, 117, 145),
+                true
+            ).apply {
+                gravity = Gravity.CENTER
+            },
+            topMargin(24)
         )
     }
 
-    private fun infoCard(title: String, value: String): LinearLayout {
-        val card = panel()
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        card.addView(
-            label(title, 9f, Color.rgb(137, 157, 189), true)
-        )
-
-        card.addView(
-            label(value, 14f, Color.WHITE, true),
-            topMargin(8)
-        )
-
-        return card
+        if (requestCode == 401) {
+            if (
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
+                Settings.canDrawOverlays(this)
+            ) {
+                startService(
+                    Intent(this, OverlayService::class.java)
+                )
+            }
+        }
     }
 
     private fun sectionTitle(text: String): TextView {
@@ -484,9 +462,7 @@ class MainActivity : Activity(), SensorEventListener {
 
         val toggle = Switch(this).apply {
             isChecked = initial
-            buttonTintList = android.content.res.ColorStateList.valueOf(
-                Color.rgb(130, 220, 255)
-            )
+            setTextColor(Color.WHITE)
             setOnCheckedChangeListener { _, checked ->
                 onChanged(checked)
             }
