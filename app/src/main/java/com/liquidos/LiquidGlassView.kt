@@ -6,7 +6,9 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.LinearGradient
+import android.graphics.RadialGradient
 import android.graphics.Shader
+import android.graphics.Path
 import android.view.View
 import kotlin.math.max
 
@@ -14,9 +16,12 @@ class LiquidGlassView(context: Context) : View(context) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val rect = RectF()
+    private val clipPath = Path()
 
     private var tiltX = 0f
     private var tiltY = 0f
+
+    private val radius = 36f
 
     fun setTilt(x: Float, y: Float) {
         tiltX = x.coerceIn(-1f, 1f)
@@ -32,50 +37,89 @@ class LiquidGlassView(context: Context) : View(context) {
         if (w <= 0f || h <= 0f) return
 
         val inset = max(8f, w * 0.025f)
+
         rect.set(
-            inset + tiltX * 8f,
-            inset + tiltY * 8f,
-            w - inset + tiltX * 8f,
-            h - inset + tiltY * 8f
+            inset + tiltX * 5f,
+            inset + tiltY * 5f,
+            w - inset + tiltX * 5f,
+            h - inset + tiltY * 5f
         )
 
-        paint.shader = LinearGradient(
-            rect.left,
-            rect.top,
-            rect.right,
-            rect.bottom,
-            intArrayOf(
-                Color.argb(190, 210, 235, 255),
-                Color.argb(95, 105, 155, 205),
-                Color.argb(135, 35, 55, 90)
-            ),
-            null,
-            Shader.TileMode.CLAMP
+        canvas.save()
+
+        clipPath.reset()
+        clipPath.addRoundRect(
+            rect, radius, radius, Path.Direction.CW
         )
+        canvas.clipPath(clipPath)
 
-        canvas.drawRoundRect(rect, 36f, 36f, paint)
-        paint.shader = null
-
-        paint.color = Color.argb(100, 255, 255, 255)
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 2f
-        canvas.drawRoundRect(rect, 36f, 36f, paint)
-
+        // Lapisan dasar kaca
         paint.style = Paint.Style.FILL
         paint.shader = LinearGradient(
-            rect.left,
-            rect.top,
-            rect.left + rect.width() * 0.8f,
-            rect.top + rect.height() * 0.45f,
+            rect.left, rect.top,
+            rect.right, rect.bottom,
             intArrayOf(
-                Color.argb(95, 255, 255, 255),
-                Color.argb(0, 255, 255, 255)
+                Color.argb(105, 235, 248, 255),
+                Color.argb(48, 130, 180, 230),
+                Color.argb(90, 20, 35, 70)
+            ),
+            floatArrayOf(0f, 0.48f, 1f),
+            Shader.TileMode.CLAMP
+        )
+        canvas.drawRect(rect, paint)
+        paint.shader = null
+
+        // Pantulan cahaya lembut
+        paint.shader = RadialGradient(
+            rect.left + rect.width() * (0.25f + tiltX * 0.08f),
+            rect.top + rect.height() * (0.12f + tiltY * 0.08f),
+            rect.width() * 0.8f,
+            intArrayOf(
+                Color.argb(100, 255, 255, 255),
+                Color.argb(25, 210, 235, 255),
+                Color.TRANSPARENT
+            ),
+            floatArrayOf(0f, 0.45f, 1f),
+            Shader.TileMode.CLAMP
+        )
+        canvas.drawRect(rect, paint)
+        paint.shader = null
+
+        // Kilau di bagian atas
+        paint.shader = LinearGradient(
+            rect.left, rect.top,
+            rect.left, rect.top + rect.height() * 0.5f,
+            intArrayOf(
+                Color.argb(85, 255, 255, 255),
+                Color.argb(12, 255, 255, 255),
+                Color.TRANSPARENT
             ),
             null,
             Shader.TileMode.CLAMP
         )
+        canvas.drawRect(rect, paint)
+        paint.shader = null
 
-        canvas.drawRoundRect(rect, 36f, 36f, paint)
+        canvas.restore()
+
+        // Tepian kaca
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 1.5f
+        paint.color = Color.argb(145, 255, 255, 255)
+        canvas.drawRoundRect(rect, radius, radius, paint)
+
+        // Garis cahaya bagian dalam
+        val inner = RectF(
+            rect.left + 3f,
+            rect.top + 3f,
+            rect.right - 3f,
+            rect.bottom - 3f
+        )
+        paint.strokeWidth = 1f
+        paint.color = Color.argb(35, 255, 255, 255)
+        canvas.drawRoundRect(inner, radius - 3f, radius - 3f, paint)
+
+        paint.style = Paint.Style.FILL
         paint.shader = null
     }
 }
