@@ -1,4 +1,3 @@
-
 package com.liquidos
 
 import android.app.Activity
